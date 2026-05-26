@@ -4,22 +4,51 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Get Surge</title>
+
+  <!-- Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6BN42Y7V72"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-6BN42Y7V72', { send_page_view: false });
+  </script>
+
   <script>
     (function () {
       var ua = navigator.userAgent || navigator.vendor || window.opera;
+      var device, destination;
+      var campaign = 'surge-in_app_share-surge';
 
       if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) {
-        window.location.replace("https://apps.apple.com/app/id6753192168");
-        return;
+        device = 'ios';
+        destination = 'https://apps.apple.com/app/id6753192168'
+                    + '?ct=' + encodeURIComponent(campaign) + '&mt=8';
+      } else if (/android/i.test(ua)) {
+        device = 'android';
+        var referrer = 'utm_source=in_app_share&utm_medium=app&utm_campaign=' + campaign;
+        destination = 'https://play.google.com/store/apps/details?id=com.lazytigerlabs.surge'
+                    + '&referrer=' + encodeURIComponent(referrer);
+      } else if (/Macintosh/i.test(ua)) {
+        device = 'macos';
+        destination = 'https://apps.apple.com/app/id6753192168'
+                    + '?ct=' + encodeURIComponent(campaign) + '&mt=12';
+      } else {
+        device = 'desktop';
+        destination = 'https://lazytigerlabs.com';
       }
 
-      if (/android/i.test(ua)) {
-        window.location.replace("https://play.google.com/store/apps/details?id=com.lazytigerlabs.surge");
-        return;
-      }
+      gtag('event', 'app_link_click', {
+        game:            'surge',
+        social_platform: 'in_app_share',
+        account:         'surge',
+        device_type:     device,
+        campaign:        campaign
+      });
 
-      // Desktop/unknown — fall back to homepage
-      window.location.replace("https://lazytigerlabs.com");
+      setTimeout(function() {
+        window.location.replace(destination);
+      }, 400);
     })();
   </script>
 </head>
