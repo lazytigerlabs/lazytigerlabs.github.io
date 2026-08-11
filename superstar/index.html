@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
   <title>Lazy Tiger Labs</title>
 
   <!-- ─── EDIT THIS CONFIG FOR EACH ACCOUNT ─────────────────────────────────
@@ -17,8 +18,8 @@
   <script>
     var CONFIG = {
       game:     'surge',
-      platform: 'tiktok',
-      account:  'acct1',
+      platform: 'instagram',
+      account:  'superstar',
       ios:      'https://apps.apple.com/app/id6753192168',
       android:  'https://play.google.com/store/apps/details?id=com.lazytigerlabs.surge',
       macos:    'https://apps.apple.com/app/id6753192168',
@@ -64,7 +65,7 @@
     var ua = navigator.userAgent || '';
     var device, destination;
 
-    // Campaign label used across both platforms: e.g. "surge-tiktok-acct1"
+    // Campaign label used across both platforms: e.g. "surge-instagram-superstar"
     var campaign = CONFIG.game + '-' + CONFIG.platform + '-' + CONFIG.account;
 
     if (/iPhone|iPad|iPod/i.test(ua)) {

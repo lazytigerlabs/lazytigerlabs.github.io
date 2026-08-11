@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>Lazy Tiger Labs</title>
+
+  <!-- ─── EDIT THIS CONFIG FOR EACH ACCOUNT ─────────────────────────────────
+    game:     short name of the game (e.g. "surge", "game2")
+    platform: social platform this link lives on (e.g. "tiktok", "youtube", "instagram")
+    account:  your account handle or a label (e.g. "@lazytigerlabs", "main")
+    ios:      App Store URL for this game
+    android:  Play Store URL for this game
+    macos:    Mac App Store URL (iOS apps run on Apple Silicon — same URL works)
+    desktop:  fallback URL for Windows/Linux visitors
+  ─────────────────────────────────────────────────────────────────────────── -->
+  <script>
+    var CONFIG = {
+      game:     'surge',
+      platform: 'youtube',
+      account:  'wealth',
+      ios:      'https://apps.apple.com/app/id6753192168',
+      android:  'https://play.google.com/store/apps/details?id=com.lazytigerlabs.surge',
+      macos:    'https://apps.apple.com/app/id6753192168',
+      desktop:  'https://lazytigerlabs.com'
+    };
+
+    var GA_ID = 'G-6BN42Y7V72'; // ← replace with your Measurement ID
+  </script>
+
+  <!-- Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6BN42Y7V72"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', GA_ID, { send_page_view: false });
+  </script>
+
+  <style>
+    body {
+      margin: 0;
+      background: #0f0f0f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid #333;
+      border-top-color: #ff7700;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="spinner"></div>
+
+  <script>
+    var ua = navigator.userAgent || '';
+    var device, destination;
+
+    // Campaign label used across both platforms: e.g. "surge-youtube-wealth"
+    var campaign = CONFIG.game + '-' + CONFIG.platform + '-' + CONFIG.account;
+
+    if (/iPhone|iPad|iPod/i.test(ua)) {
+      device = 'ios';
+      // ct = campaign token, shows in App Store Connect Analytics
+      destination = CONFIG.ios + '?ct=' + encodeURIComponent(campaign) + '&mt=8';
+    } else if (/Android/i.test(ua)) {
+      device = 'android';
+      // referrer = UTM params, Firebase reads these on first_open
+      var referrer = 'utm_source=' + CONFIG.platform
+                   + '&utm_medium=social'
+                   + '&utm_campaign=' + campaign;
+      destination = CONFIG.android + '&referrer=' + encodeURIComponent(referrer);
+    } else if (/Macintosh/i.test(ua)) {
+      device = 'macos';
+      destination = CONFIG.macos + '?ct=' + encodeURIComponent(campaign) + '&mt=12';
+    } else {
+      device = 'desktop';
+      destination = CONFIG.desktop;
+    }
+
+    gtag('event', 'app_link_click', {
+      game:            CONFIG.game,
+      social_platform: CONFIG.platform,
+      account:         CONFIG.account,
+      device_type:     device,
+      campaign:        campaign
+    });
+
+    setTimeout(function() {
+      window.location.replace(destination);
+    }, 400);
+  </script>
+</body>
+</html>
