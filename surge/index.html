@@ -20,11 +20,13 @@
       var ua = navigator.userAgent || navigator.vendor || window.opera;
       var device, destination;
       var campaign = 'surge-in_app_share-surge';
+      // App Store Connect provider token — required alongside ct, or Apple discards the campaign
+      var pt = '127925134';
 
       if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) {
         device = 'ios';
         destination = 'https://apps.apple.com/app/id6753192168'
-                    + '?ct=' + encodeURIComponent(campaign) + '&mt=8';
+                    + '?pt=' + pt + '&ct=' + encodeURIComponent(campaign) + '&mt=8';
       } else if (/android/i.test(ua)) {
         device = 'android';
         var referrer = 'utm_source=in_app_share&utm_medium=app&utm_campaign=' + campaign;
@@ -33,7 +35,7 @@
       } else if (/Macintosh/i.test(ua)) {
         device = 'macos';
         destination = 'https://apps.apple.com/app/id6753192168'
-                    + '?ct=' + encodeURIComponent(campaign) + '&mt=12';
+                    + '?pt=' + pt + '&ct=' + encodeURIComponent(campaign) + '&mt=8';
       } else {
         device = 'desktop';
         destination = 'https://lazytigerlabs.com';

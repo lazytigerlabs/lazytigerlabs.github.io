@@ -10,6 +10,7 @@
     game:     short name of the game (e.g. "surge", "game2")
     platform: social platform this link lives on (e.g. "tiktok", "youtube", "instagram")
     account:  your account handle or a label (e.g. "@lazytigerlabs", "main")
+    pt:       App Store Connect provider token (same for every app on the team)
     ios:      App Store URL for this game
     android:  Play Store URL for this game
     macos:    Mac App Store URL (iOS apps run on Apple Silicon — same URL works)
@@ -20,6 +21,7 @@
       game:     'surge',
       platform: 'youtube',
       account:  'culture',
+      pt:       '127925134',
       ios:      'https://apps.apple.com/app/id6753192168',
       android:  'https://play.google.com/store/apps/details?id=com.lazytigerlabs.surge',
       macos:    'https://apps.apple.com/app/id6753192168',
@@ -71,7 +73,7 @@
     if (/iPhone|iPad|iPod/i.test(ua)) {
       device = 'ios';
       // ct = campaign token, shows in App Store Connect Analytics
-      destination = CONFIG.ios + '?ct=' + encodeURIComponent(campaign) + '&mt=8';
+      destination = CONFIG.ios + '?pt=' + CONFIG.pt + '&ct=' + encodeURIComponent(campaign) + '&mt=8';
     } else if (/Android/i.test(ua)) {
       device = 'android';
       // referrer = UTM params, Firebase reads these on first_open
@@ -81,7 +83,7 @@
       destination = CONFIG.android + '&referrer=' + encodeURIComponent(referrer);
     } else if (/Macintosh/i.test(ua)) {
       device = 'macos';
-      destination = CONFIG.macos + '?ct=' + encodeURIComponent(campaign) + '&mt=12';
+      destination = CONFIG.macos + '?pt=' + CONFIG.pt + '&ct=' + encodeURIComponent(campaign) + '&mt=8';
     } else {
       device = 'desktop';
       destination = CONFIG.desktop;
