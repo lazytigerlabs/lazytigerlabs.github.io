@@ -56,9 +56,46 @@
 <body>
   <div class="card">
     <img src="assets/logo.jpg" alt="Lazy Tiger Labs logo" />
-    <a href="/surge">Play Surge!</a>
+    <a id="surge" href="https://apps.apple.com/app/id6753192168">Play Surge!</a>
     <a href="mailto:hello@lazytigerlabs.com">Contact Us</a>
     <a href="/privacy.html">Privacy Policy</a>
   </div>
+
+  <!-- Sends each visitor to the right store, tagged as website/homepage traffic.
+       Per-game link pages live under /surge/<account>; this is the hub button. -->
+  <script>
+    var SURGE = {
+      pt:      '127925134',
+      ios:     'https://apps.apple.com/app/id6753192168',
+      android: 'https://play.google.com/store/apps/details?id=com.lazytigerlabs.surge'
+    };
+    var campaign = 'surge-website-homepage';
+    var ua = navigator.userAgent || '';
+    var device, destination;
+
+    if (/iPhone|iPad|iPod|Macintosh/i.test(ua)) {
+      // iPadOS 13+ reports itself as Macintosh; same App Store URL works for both.
+      device = /Macintosh/i.test(ua) ? 'macos' : 'ios';
+      destination = SURGE.ios + '?pt=' + SURGE.pt + '&ct=' + encodeURIComponent(campaign) + '&mt=8';
+    } else {
+      // Android and desktop both go to Play — its referrer survives a
+      // web-initiated install, so desktop clicks stay attributable.
+      device = /Android/i.test(ua) ? 'android' : 'desktop';
+      var referrer = 'utm_source=website&utm_medium=web&utm_campaign=' + campaign;
+      destination = SURGE.android + '&referrer=' + encodeURIComponent(referrer);
+    }
+
+    var link = document.getElementById('surge');
+    link.href = destination;
+    link.addEventListener('click', function () {
+      gtag('event', 'app_link_click', {
+        game:            'surge',
+        social_platform: 'website',
+        account:         'homepage',
+        device_type:     device,
+        campaign:        campaign
+      });
+    });
+  </script>
 </body>
 </html>

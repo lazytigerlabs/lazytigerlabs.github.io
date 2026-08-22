@@ -15,19 +15,17 @@
     ios:      App Store URL for this game
     android:  Play Store URL for this game
     macos:    Mac App Store URL (iOS apps run on Apple Silicon — same URL works)
-    desktop:  fallback URL for Windows/Linux visitors
   ─────────────────────────────────────────────────────────────────────────── -->
   <script>
     var CONFIG = {
       game:     'surge',
       platform: 'youtube',
-      account:  'wealth',
+      account:  'humans',
       medium:   'social',
       pt:       '127925134',
       ios:      'https://apps.apple.com/app/id6753192168',
       android:  'https://play.google.com/store/apps/details?id=com.lazytigerlabs.surge',
-      macos:    'https://apps.apple.com/app/id6753192168',
-      desktop:  'https://lazytigerlabs.com'
+      macos:    'https://apps.apple.com/app/id6753192168'
     };
 
     var GA_ID = 'G-6BN42Y7V72';
@@ -125,9 +123,17 @@
       destination = CONFIG.macos + '?pt=' + CONFIG.pt + '&ct=' + encodeURIComponent(campaign) + '&mt=8';
       label = 'Open the App Store';
     } else {
+      // Desktop: Play's web listing can push an install to a linked Android
+      // device, and the referrer survives that — so it is the one fallback
+      // that still attributes.
       device = 'desktop';
-      destination = CONFIG.desktop;
-      label = 'Visit lazytigerlabs.com';
+      // medium is hardcoded 'web' (not CONFIG.medium) so desktop-originated
+      // installs stay separable from real Android ones in Play Console.
+      var desktopReferrer = 'utm_source=' + CONFIG.platform
+                          + '&utm_medium=web'
+                          + '&utm_campaign=' + campaign;
+      destination = CONFIG.android + '&referrer=' + encodeURIComponent(desktopReferrer);
+      label = 'Get it on Google Play';
     }
 
     var store = document.getElementById('store');
@@ -142,17 +148,12 @@
       campaign:        campaign
     });
 
-    // Desktop has nowhere better to go, so hand it straight to the site.
-    // Everywhere else the store opens in its own app and this tab stays behind —
-    // so leave a real page here instead of a spinner that never resolves.
-    if (device === 'desktop') {
-      setTimeout(function () { window.location.replace(destination); }, 400);
-    } else {
-      setTimeout(function () { window.location.href = destination; }, 400);
-      setTimeout(function () {
-        document.getElementById('status').textContent = 'Store didn’t open? Tap below.';
-      }, 2500);
-    }
+    // On mobile the store opens in its own app and this tab stays behind, so
+    // leave a real page here instead of a spinner that never resolves.
+    setTimeout(function () { window.location.href = destination; }, 400);
+    setTimeout(function () {
+      document.getElementById('status').textContent = 'Store didn’t open? Tap below.';
+    }, 2500);
   </script>
 </body>
 </html>
