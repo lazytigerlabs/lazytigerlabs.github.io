@@ -6,54 +6,153 @@
   <meta name="robots" content="noindex" />
   <title>Get Surge</title>
 
+  <!-- ─── EDIT THIS CONFIG FOR EACH ACCOUNT ─────────────────────────────────
+    game:     short name of the game (e.g. "surge", "game2")
+    platform: social platform this link lives on (e.g. "tiktok", "youtube", "instagram")
+    account:  your account handle or a label (e.g. "@lazytigerlabs", "main")
+    medium:   utm_medium for the Play Store referrer (e.g. "social", "app")
+    pt:       App Store Connect provider token (same for every app on the team)
+    ios:      App Store URL for this game
+    android:  Play Store URL for this game
+    macos:    Mac App Store URL (iOS apps run on Apple Silicon — same URL works)
+    desktop:  fallback URL for Windows/Linux visitors
+  ─────────────────────────────────────────────────────────────────────────── -->
+  <script>
+    var CONFIG = {
+      game:     'surge',
+      platform: 'in_app_share',
+      account:  'surge',
+      medium:   'app',
+      pt:       '127925134',
+      ios:      'https://apps.apple.com/app/id6753192168',
+      android:  'https://play.google.com/store/apps/details?id=com.lazytigerlabs.surge',
+      macos:    'https://apps.apple.com/app/id6753192168',
+      desktop:  'https://lazytigerlabs.com'
+    };
+
+    var GA_ID = 'G-6BN42Y7V72';
+  </script>
+
   <!-- Google Analytics 4 -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-6BN42Y7V72"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){ dataLayer.push(arguments); }
     gtag('js', new Date());
-    gtag('config', 'G-6BN42Y7V72', { send_page_view: false });
+    gtag('config', GA_ID, { send_page_view: false });
   </script>
+
+  <style>
+    @font-face {
+      font-family: 'Fred';
+      src: url('/assets/Fred.ttf') format('truetype');
+      font-display: swap;
+    }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      margin: 0;
+      background: #0f0f0f;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+      padding: 24px;
+      box-sizing: border-box;
+    }
+    .logo {
+      width: 40vw;
+      max-width: 220px;
+      min-width: 120px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+    }
+    .status {
+      margin: 0 0 20px;
+      font-size: 1.05rem;
+      color: #bbb;
+    }
+    .btn {
+      display: block;
+      margin: 0 auto 16px;
+      padding: 14px 28px;
+      border-radius: 8px;
+      background: #ff7700;
+      color: #000;
+      text-decoration: none;
+      font-size: clamp(1rem, 2.5vw, 1.4rem);
+      font-weight: 600;
+      font-family: 'Fred', system-ui, sans-serif;
+    }
+    .home {
+      color: #777;
+      font-size: 0.9rem;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <img class="logo" src="/assets/logo.jpg" alt="Lazy Tiger Labs" />
+    <p class="status" id="status">Taking you to the App Store…</p>
+    <a class="btn" id="store" href="https://lazytigerlabs.com">Open the App Store</a>
+    <a class="home" href="/">More from Lazy Tiger Labs</a>
+  </div>
 
   <script>
-    (function () {
-      var ua = navigator.userAgent || navigator.vendor || window.opera;
-      var device, destination;
-      var campaign = 'surge-in_app_share-surge';
-      // App Store Connect provider token — required alongside ct, or Apple discards the campaign
-      var pt = '127925134';
+    var ua = navigator.userAgent || '';
+    var device, destination, label;
 
-      if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) {
-        device = 'ios';
-        destination = 'https://apps.apple.com/app/id6753192168'
-                    + '?pt=' + pt + '&ct=' + encodeURIComponent(campaign) + '&mt=8';
-      } else if (/android/i.test(ua)) {
-        device = 'android';
-        var referrer = 'utm_source=in_app_share&utm_medium=app&utm_campaign=' + campaign;
-        destination = 'https://play.google.com/store/apps/details?id=com.lazytigerlabs.surge'
-                    + '&referrer=' + encodeURIComponent(referrer);
-      } else if (/Macintosh/i.test(ua)) {
-        device = 'macos';
-        destination = 'https://apps.apple.com/app/id6753192168'
-                    + '?pt=' + pt + '&ct=' + encodeURIComponent(campaign) + '&mt=8';
-      } else {
-        device = 'desktop';
-        destination = 'https://lazytigerlabs.com';
-      }
+    // Campaign label used across both platforms: e.g. "surge-youtube-money"
+    var campaign = CONFIG.game + '-' + CONFIG.platform + '-' + CONFIG.account;
 
-      gtag('event', 'app_link_click', {
-        game:            'surge',
-        social_platform: 'in_app_share',
-        account:         'surge',
-        device_type:     device,
-        campaign:        campaign
-      });
+    if (/iPhone|iPad|iPod/i.test(ua)) {
+      device = 'ios';
+      // ct = campaign token, shows in App Store Connect Analytics
+      destination = CONFIG.ios + '?pt=' + CONFIG.pt + '&ct=' + encodeURIComponent(campaign) + '&mt=8';
+      label = 'Open the App Store';
+    } else if (/Android/i.test(ua)) {
+      device = 'android';
+      // referrer = UTM params, Firebase reads these on first_open
+      var referrer = 'utm_source=' + CONFIG.platform
+                   + '&utm_medium=' + CONFIG.medium
+                   + '&utm_campaign=' + campaign;
+      destination = CONFIG.android + '&referrer=' + encodeURIComponent(referrer);
+      label = 'Get it on Google Play';
+    } else if (/Macintosh/i.test(ua)) {
+      device = 'macos';
+      destination = CONFIG.macos + '?pt=' + CONFIG.pt + '&ct=' + encodeURIComponent(campaign) + '&mt=8';
+      label = 'Open the App Store';
+    } else {
+      device = 'desktop';
+      destination = CONFIG.desktop;
+      label = 'Visit lazytigerlabs.com';
+    }
 
-      setTimeout(function() {
-        window.location.replace(destination);
-      }, 400);
-    })();
+    var store = document.getElementById('store');
+    store.href = destination;
+    store.textContent = label;
+
+    gtag('event', 'app_link_click', {
+      game:            CONFIG.game,
+      social_platform: CONFIG.platform,
+      account:         CONFIG.account,
+      device_type:     device,
+      campaign:        campaign
+    });
+
+    // Desktop has nowhere better to go, so hand it straight to the site.
+    // Everywhere else the store opens in its own app and this tab stays behind —
+    // so leave a real page here instead of a spinner that never resolves.
+    if (device === 'desktop') {
+      setTimeout(function () { window.location.replace(destination); }, 400);
+    } else {
+      setTimeout(function () { window.location.href = destination; }, 400);
+      setTimeout(function () {
+        document.getElementById('status').textContent = 'Store didn’t open? Tap below.';
+      }, 2500);
+    }
   </script>
-</head>
-<body></body>
+</body>
 </html>
