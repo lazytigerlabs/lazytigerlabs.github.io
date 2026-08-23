@@ -14,7 +14,6 @@
     pt:       App Store Connect provider token (same for every app on the team)
     ios:      App Store URL for this game
     android:  Play Store URL for this game
-    macos:    Mac App Store URL (iOS apps run on Apple Silicon — same URL works)
   ─────────────────────────────────────────────────────────────────────────── -->
   <script>
     var CONFIG = {
@@ -24,8 +23,7 @@
       medium:   'app',
       pt:       '127925134',
       ios:      'https://apps.apple.com/app/id6753192168',
-      android:  'https://play.google.com/store/apps/details?id=com.lazytigerlabs.surge',
-      macos:    'https://apps.apple.com/app/id6753192168'
+      android:  'https://play.google.com/store/apps/details?id=com.lazytigerlabs.surge'
     };
 
     var GA_ID = 'G-6BN42Y7V72';
@@ -93,7 +91,7 @@
 <body>
   <div class="card">
     <img class="logo" src="/assets/logo.jpg" alt="Lazy Tiger Labs" />
-    <p class="status" id="status">Taking you to the App Store…</p>
+    <p class="status" id="status"></p>
     <a class="btn" id="store" href="https://lazytigerlabs.com">Open the App Store</a>
     <a class="home" href="/">More from Lazy Tiger Labs</a>
   </div>
@@ -119,8 +117,13 @@
       destination = CONFIG.android + '&referrer=' + encodeURIComponent(referrer);
       label = 'Get it on Google Play';
     } else if (/Macintosh/i.test(ua)) {
+      // Same listing as iOS -- iPhone apps run as-is on Apple Silicon, so there
+      // is no separate Mac URL to configure. Split out only to keep 'macos'
+      // distinct from 'ios' in the GA4 device_type breakdown. Note an iPad in
+      // Safari's desktop mode also reports as Macintosh and lands here; the
+      // destination is right either way, only the label is approximate.
       device = 'macos';
-      destination = CONFIG.macos + '?pt=' + CONFIG.pt + '&ct=' + encodeURIComponent(campaign) + '&mt=8';
+      destination = CONFIG.ios + '?pt=' + CONFIG.pt + '&ct=' + encodeURIComponent(campaign) + '&mt=8';
       label = 'Open the App Store';
     } else {
       // Desktop: Play's web listing can push an install to a linked Android
@@ -140,20 +143,28 @@
     store.href = destination;
     store.textContent = label;
 
+    // Static line, no timer: this tab is usually read *after* a successful
+    // handoff, when the store has already opened, so it must not imply the
+    // redirect failed. No store name here -- the button right below has it.
+    var gameName = CONFIG.game.charAt(0).toUpperCase() + CONFIG.game.slice(1);
+    document.getElementById('status').textContent = 'Tap below to play ' + gameName;
+
     gtag('event', 'app_link_click', {
       game:            CONFIG.game,
       social_platform: CONFIG.platform,
       account:         CONFIG.account,
       device_type:     device,
-      campaign:        campaign
+      campaign:        campaign,
+      // beacon survives the page being torn down by the navigation, which is
+      // what happens on Android/desktop. iOS cancels the navigation for the
+      // universal-link handoff, so the page lives on and would have sent
+      // anyway -- this is for the other platforms.
+      transport_type:  'beacon'
     });
 
     // On mobile the store opens in its own app and this tab stays behind, so
     // leave a real page here instead of a spinner that never resolves.
     setTimeout(function () { window.location.href = destination; }, 400);
-    setTimeout(function () {
-      document.getElementById('status').textContent = 'Store didn’t open? Tap below.';
-    }, 2500);
   </script>
 </body>
 </html>
