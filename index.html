@@ -26,16 +26,22 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
+      min-height: 100dvh;
       margin: 0;
     }
     .card {
       text-align: center;
     }
     img {
-      width: 40vw;
-      max-width: 320px;
-      min-width: 120px;
+      /* Grows to fill the space the three buttons don't use, so it is as big
+         as it can be on any phone without ever creating a scroll. The
+         subtracted 240px is the button stack + its margins. */
+      width: auto;
+      height: auto;
+      max-width: min(55vw, 320px);
+      max-height: calc(100vh - 240px);
+      max-height: calc(100dvh - 240px);
       margin-bottom: 24px;
       border-radius: 12px;
     }

@@ -53,14 +53,20 @@
       align-items: center;
       justify-content: center;
       min-height: 100vh;
+      min-height: 100dvh;
       text-align: center;
       padding: 24px;
       box-sizing: border-box;
     }
     .logo {
-      width: 40vw;
-      max-width: 220px;
-      min-width: 120px;
+      /* Grows to fill the space the status line + buttons don't use, so it is
+         as big as it can be on any phone without ever creating a scroll. The
+         subtracted 230px is that text/button stack plus the body padding. */
+      width: auto;
+      height: auto;
+      max-width: min(55vw, 300px);
+      max-height: calc(100vh - 230px);
+      max-height: calc(100dvh - 230px);
       border-radius: 12px;
       margin-bottom: 24px;
     }
