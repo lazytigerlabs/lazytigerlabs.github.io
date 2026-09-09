@@ -27,6 +27,10 @@
     };
 
     var GA_ID = 'G-6BN42Y7V72';
+
+    // ntfy.sh topic for click notifications. Anyone who knows this string can
+    // read it, so it is random rather than guessable.
+    var NTFY_TOPIC = 'ltl-ec3b129581';
   </script>
 
   <!-- Google Analytics 4 -->
@@ -167,6 +171,17 @@
       // anyway -- this is for the other platforms.
       transport_type:  'beacon'
     });
+
+    // Instant phone ping. Subscribe to the topic above in the ntfy app to get
+    // one notification per click; mute it there when it gets noisy -- nothing
+    // in this page has to change. Plain-text body with no custom headers keeps
+    // this a CORS-simple request, so there is no preflight to lose when the
+    // page navigates away.
+    fetch('https://ntfy.sh/' + NTFY_TOPIC, {
+      method:    'POST',
+      body:      gameName + ' click - ' + CONFIG.account + ' (' + CONFIG.platform + ', ' + device + ')',
+      keepalive: true
+    }).catch(function () {});
 
     // On mobile the store opens in its own app and this tab stays behind, so
     // leave a real page here instead of a spinner that never resolves.
